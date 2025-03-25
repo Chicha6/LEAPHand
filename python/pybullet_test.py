@@ -89,14 +89,15 @@ class LeapPybulletIK():
         #clid = p.connect(p.SHARED_MEMORY)
         #clid = p.connect(p.DIRECT)
         physicsClient = p.connect(p.GUI)
-        self.glove_to_leap_mapping_scale = 1.6
+        self.glove_to_leap_mapping_scale = 1
         path_src = os.path.abspath(__file__)
         path_src = os.path.dirname(path_src)
         path_src = os.path.join(path_src, "leap_hand_mesh_right/robot_pybullet.urdf")
         self.LeapId = p.loadURDF(
             path_src,
-            [-0.05, -0.03, -0.125],
-            p.getQuaternionFromEuler([0, 1.57, 1.57]),
+            # [-0.05, -0.03, -0.125],
+            [0,0,0],
+            p.getQuaternionFromEuler([0, 0, 1.57]),
             useFixedBase = True
         )
         self.numJoints = p.getNumJoints(self.LeapId)
@@ -162,8 +163,8 @@ class LeapPybulletIK():
 def main(**kwargs):
     # leap_hand = LeapNode()
     
-    left_glove_sn = "558097A3"
-    right_glove_sn = "E13E29F2"
+    # left_glove_sn = "558097A3"
+    # right_glove_sn = "E13E29F2"
 
     context = zmq.Context()
     #Socket to talk to Manus SDK
@@ -171,6 +172,7 @@ def main(**kwargs):
     socket = context.socket(zmq.PULL)
     socket.setsockopt(zmq.CONFLATE, True)     
     socket.connect("tcp://127.0.0.1:8000")
+
     leappybulletik = LeapPybulletIK()
     glove_to_leap_mapping_scale = 1.6
 
@@ -179,8 +181,8 @@ def main(**kwargs):
         #receive the message from the socket
         message = message.decode('utf-8')
 
-        # right[0] is gloveID, the nodes use for IK are (3, 4, 8, 9, 13, 14, 18, 19, 23, 24)
-        # right[1:31] are the x,y,z values for the above nodes; 10 nodes * 3 axes = 30
+        # right[0] is gloveID, the nodes used for IK are (3, 4, 8, 9, 13, 14, 18, 19, 23, 24)
+        # right[1:31] are the x,y,z values for the above nodes; 10 nodes * 3 axes = 30 values
         right = message.split(",")   
         right = list(map(float,right[1:31]))
         right = [round(n, 2) for n in right]
@@ -199,7 +201,7 @@ def main(**kwargs):
 
         leappybulletik.update_target_vis(hand_pos)
         print(hand_pos)
-        time.sleep(1)
+        time.sleep(.1)
 
 if __name__ == "__main__":
     main()
