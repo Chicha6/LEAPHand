@@ -17,7 +17,7 @@ I recommend you only query when necessary and below 90 samples a second.  Used t
 #Applying a positive angle closes the joints more and more to curl closed.
 #The MCP is centered at 180 and can move positive or negative to that.
 
-#The joint numbering goes from Index (0-3), Middle(4-7), Ring(8-11) to Thumb(12-15) and from MCP Side, MCP Forward, PIP, DIP for each finger.
+#The joint numbering goes from Index (0-3), Middle(4-7), Ring(8-11) to Thumb(12-15) and from MCP Side(Splay), MCP Forward, PIP, DIP for each finger.
 #For instance, the MCP Side of Index is ID 0, the MCP Forward of Ring is 9, the DIP of Ring is 11
 
 """
@@ -38,8 +38,11 @@ class LeapNode:
         # For example ls /dev/serial/by-id/* to find your LEAP Hand. Then use the result.  
         # For example: /dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT7W91VW-if00-port0
 
+        # Motor IDs, can be changed in Dynamixel Wizard
+        # Index  -> 0: MCP side, 1: MCP flex, 2: Pip flex, 3: Dip flex
+        # Middle -> 4: MCP side, 5: MCP flex, 6: Pip flex, 7: Dip flex
+        # THumb  -> 8: MCP side, 9: MCP flex, 10: Pip flex, 11: Dip flex
         self.motors = motors = [0,1,2,3,4,5,6,7,8,9,10,11]
-        # self.motors = motors = [8,9,10,11]
 
 
         try:
@@ -96,14 +99,15 @@ class LeapNode:
     #These combined commands are faster FYI and return a list of data
     def pos_vel_eff_srv(self):
         return self.dxl_client.read_pos_vel_cur()
+    
 #init the node
 def main(**kwargs):
     leap_hand = LeapNode()
     while True:
 
-        leap_hand.set_allegro(np.zeros(12)) #Set to an open pose and read the joint angles 33hz
-        # leap_hand.set_leap(np.full(12,3.141)) #Set to an open pose and read the joint angles 33hz
-        # print("Position: " + str(leap_hand.r8ead_pos()))
+        # leap_hand.set_allegro(np.zeros(12)) # Set to an open pose and read the joint angles 33hz
+        # leap_hand.set_leap(np.full(12,3.141)) # Set to an open pose and read the joint angles 33hz
+        # print("Position: " + str(leap_hand.r8ead_pos())) # Reads leap motor positions and print
         time.sleep(.5)
 
 

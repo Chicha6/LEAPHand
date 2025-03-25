@@ -17,7 +17,7 @@ I recommend you only query when necessary and below 90 samples a second.  Used t
 #Applying a positive angle closes the joints more and more to curl closed.
 #The MCP is centered at 180 and can move positive or negative to that.
 
-#The joint numbering goes from Index (0-3), Middle(4-7), Ring(8-11) to Thumb(12-15) and from MCP Side, MCP Forward, PIP, DIP for each finger.
+#The joint numbering goes from Index (0-3), Middle(4-7), Ring(8-11) to Thumb(12-15) and from MCP Side(Splay), MCP Forward, PIP, DIP for each finger.
 #For instance, the MCP Side of Index is ID 0, the MCP Forward of Ring is 9, the DIP of Ring is 11
 
 """
@@ -31,15 +31,17 @@ class LeapNode:
         self.kI = 0
         self.kD = 200
         self.curr_lim = 350
-        # self.prev_pos = self.pos = self.curr_pos = lhu.allegro_to_LEAPhand(np.zeros(16))
         self.prev_pos = self.pos = self.curr_pos = lhu.allegro_to_LEAPhand(np.zeros(12))
 
         #You can put the correct port here or have the node auto-search for a hand at the first 3 ports.
         # For example ls /dev/serial/by-id/* to find your LEAP Hand. Then use the result.  
         # For example: /dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT7W91VW-if00-port0
 
+        # Motor IDs, can be changed in Dynamixel Wizard
+        # Index  -> 0: MCP side, 1: MCP flex, 2: Pip flex, 3: Dip flex
+        # Middle -> 4: MCP side, 5: MCP flex, 6: Pip flex, 7: Dip flex
+        # THumb  -> 8: MCP side, 9: MCP flex, 10: Pip flex, 11: Dip flex
         self.motors = motors = [0,1,2,3,4,5,6,7,8,9,10,11]
-
 
         try:
             self.dxl_client = DynamixelClient(motors, '/dev/ttyUSB0', 4000000)
@@ -120,31 +122,30 @@ def main(**kwargs):
         right = message.split(",")   
         if len(right) == 12:
             rightData = list(map(float,right[0:12]))
-            #rightData[0:4]: thumb, rightData[4:8]: index, rightData[8:12]: middle, 
+            # Current joint angle order: thumb, index, middle
 
-        # leapInput = [float(i) for i in data[4:12]]  + [-45 + 3.0*float(data[0]) + 180] + [(-250+float(data[1]))*-1]+ [2*data[2] + 180] + [data[3] + 180]
 
-    
+        # Adjustments for index and middle joints
+        # +180 because zero position (open pose) for LEAP is 180 degrees (MANUS origin is 0 degrees)
         for n in range(4,12):
-            if(n == 4 or n == 8):
-                rightData[n] = rightData[n] * -1 + 180
+            if (n == 4):
+                # Correcting and amplifying splay
+                rightData[n] = (rightData[n] + 4) * -1.7 + 180
+            elif (n == 8):
+                # Correcting and amplifying splay
+                rightData[n] = (rightData[n] + 9) * -1.5 + 180
+            elif (n == 5 or n == 9):
+                # Increase MCP flexion
+                rightData[n] = rightData[n] + 10 + 180
             else:
                 rightData[n] = rightData[n] + 180
         
 
-        rightData = rightData[4:12] + [70-1.75*rightData[1]+180] + [-20 + 3.0*rightData[0] + 180] + [-30+3.0*rightData[2]+180] + [rightData[3]+180]
-        #rightData[0:4]: index, rightData[4:8]: middle, rightData[8:12]: thumb, 
-
+        # Adjusting thumb joints and reordering joint angles in rightData
+        rightData = rightData[4:12] + [-20 + 2.3*rightData[0] + 180] + [55 - 1.7*rightData[1]+180] + [3.5*rightData[2]+180] + [rightData[3]+180]
+        # Current joint angle order: index, middle, thumb
         
-        # rightData = rightData[4:12] + rightData[0:4]
-        # rightData[0] = -2.5 * rightData[0]
-        # rightData[1] = 1.5 * rightData[1]
-        # rightData[4] = -2.5 * rightData[4]
-        # rightData[5] = 1.5 * rightData[5]
-        # rightData[8] = -2.5 * rightData[8] - np.deg2rad(45)
-        # rightData[9] = 1.5 * rightData[9]
-        # leap_hand.set_allegro(rightData)
-
+        # Convert to radian and set LEAP position
         leap_hand.set_leap(np.deg2rad(rightData))
         print(rightData)
         time.sleep(.03)
