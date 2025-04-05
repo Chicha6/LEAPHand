@@ -33,7 +33,7 @@ class LeapNode:
         self.curr_lim = 350
         self.prev_pos = self.pos = self.curr_pos = lhu.allegro_to_LEAPhand(np.zeros(12))
 
-        #You can put the correct port here or have the node auto-search for a hand at the first 3 ports.
+        # You can put the correct port here or have the node auto-search for a hand at the first 3 ports.
         # For example ls /dev/serial/by-id/* to find your LEAP Hand. Then use the result.  
         # For example: /dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT7W91VW-if00-port0
 
@@ -102,9 +102,6 @@ class LeapNode:
 def main(**kwargs):
     leap_hand = LeapNode()
 
-    # left_glove_sn = "558097A3"
-    # right_glove_sn = "E13E29F2"
-
     context = zmq.Context()
     #Socket to talk to Manus SDK
 
@@ -129,10 +126,10 @@ def main(**kwargs):
         # +180 because zero position (open pose) for LEAP is 180 degrees (MANUS origin is 0 degrees)
         for n in range(4,12):
             if (n == 4):
-                # Correcting and amplifying splay
+                # Correcting polarity and amplifying splay
                 rightData[n] = (rightData[n] + 4) * -1.7 + 180
             elif (n == 8):
-                # Correcting and amplifying splay
+                # Correcting polarity and amplifying splay
                 rightData[n] = (rightData[n] + 9) * -1.5 + 180
             elif (n == 5 or n == 9):
                 # Increase MCP flexion
