@@ -97,14 +97,15 @@ class LeapPybulletIK():
         path_src = os.path.join(path_src, "for_urdf_export/for_urdf_export.urdf")
         # here endEffector refers to the target joints(not link)
         # by right its [3,4,8,9,13,14]
-        self.leapEndEffectorIndex = [3, 4, 8, 9]
+        self.leapEndEffectorIndex = [3, 4, 8, 9,13,14]
         self.LeapId = p.loadURDF(
             path_src,
             # [-0.05, -0.03, -0.125],
-            [0.05,0.079,0],
+            [0.015,0.1,-0.008],
             p.getQuaternionFromEuler([0, 0, 3.14]),
             useFixedBase = True,
-            flags=p.URDF_MAINTAIN_LINK_ORDER
+            flags=p.URDF_MAINTAIN_LINK_ORDER,
+            globalScaling = 0.55
             
         )
         self.numJoints = p.getNumJoints(self.LeapId)
@@ -119,7 +120,7 @@ class LeapPybulletIK():
         # load balls
         small_ball_radius = 0.01
         small_ball_shape = p.createCollisionShape(p.GEOM_SPHERE, radius=small_ball_radius)
-        ball_radius = 0.005
+        ball_radius = 0.003
         ball_shape = p.createCollisionShape(p.GEOM_SPHERE, radius=ball_radius)
         baseMass = 0.001
         basePosition = [0.25, 0.25, 0]
@@ -169,22 +170,25 @@ class LeapPybulletIK():
     def compute_IK(self, hand_pos):
         p.stepSimulation()     
 
-        rightHandIndex_middle_pos = hand_pos[0]
-        rightHandIndex_pos = hand_pos[1]
+        rightHandThumb_middle_pos = hand_pos[0]
+        rightHandThumb_pos = hand_pos[1]
+
+        rightHandIndex_middle_pos = hand_pos[2]
+        rightHandIndex_pos = hand_pos[3]
         
-        rightHandMiddle_middle_pos = hand_pos[2]
-        rightHandMiddle_pos = hand_pos[3]
+        rightHandMiddle_middle_pos = hand_pos[4]
+        rightHandMiddle_pos = hand_pos[5]
         
-        # rightHandThumb_middle_pos = hand_pos[4]
-        # rightHandThumb_pos = hand_pos[5]
+        
 
         leapEndEffectorPos = [
+
             rightHandIndex_middle_pos,
             rightHandIndex_pos,
             rightHandMiddle_middle_pos,
-            rightHandMiddle_pos
-            # rightHandThumb_middle_pos,
-            # rightHandThumb_pos
+            rightHandMiddle_pos,
+            rightHandThumb_middle_pos,
+            rightHandThumb_pos,
         ]
 
         # returns resultant joint angles
@@ -207,7 +211,7 @@ class LeapPybulletIK():
                 bodyIndex=self.LeapId,
                 jointIndex=i,
                 controlMode=p.POSITION_CONTROL,
-                targetPosition=jointPoses[i],
+                targetPosition=combined_jointPoses[i],
                 targetVelocity=0,
                 force=500,
                 positionGain=0.3,
@@ -246,24 +250,10 @@ def main(**kwargs):
     # iniPos = []
     targetPosList = []
     transformPosList = []
-    rotation = []
 
-    linkStates = p.getLinkStates(leappybulletik.LeapId, leappybulletik.leapEndEffectorIndex)
-    # for state in linkStates:
-        # iniPos.append(state[4])
+    # linkStates = p.getLinkStates(leappybulletik.LeapId, leappybulletik.leapEndEffectorIndex)
 
-    # p.setJointMotorControl2(
-    #     bodyIndex=leappybulletik.LeapId,
-    #     jointIndex=4,
-    #     controlMode=p.POSITION_CONTROL,
-    #     targetPosition=0,
-    #     targetVelocity=0,
-    #     force=500,
-    #     positionGain=0.3,
-    #     velocityGain=1,
-    # )
-    # p.stepSimulation()
-    for n in range(1000):        
+    for n in range(10000):        
         targetPosList.clear()
         transformPosList.clear()
         
@@ -275,9 +265,8 @@ def main(**kwargs):
         message = socket.recv()
         message = message.decode('utf-8')
         manusData = message.split(",")   
-        # print(message)
 
-        gloveID = manusData[0]
+        # gloveID = manusData[0]
         axisRot = list(map(float,manusData[1:5]))
         targetCoord = list(map(float,manusData[5:]))
         
@@ -296,21 +285,11 @@ def main(**kwargs):
             transformVec = r.apply(targetPosList[count], inverse = True)
             transformPosList.append(transformVec)
 
-        # print(targetPosList[0], transformPosList[0])
-        # print(manusData)
-        
-        
- 
-
-
-        # print(len(manusData))
-
-        
         leappybulletik.update_target_vis(transformPosList)
-        # leappybulletik.compute_IK(newPos)
+        leappybulletik.compute_IK(transformPosList)
 
 
-        time.sleep(.1)
+        time.sleep(.01)
 
     p.disconnect()
 
