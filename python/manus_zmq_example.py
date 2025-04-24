@@ -15,7 +15,7 @@ context = zmq.Context()
 print("Connecting to SDK")
 socket = context.socket(zmq.PULL)
 socket.setsockopt(zmq.CONFLATE, True)     
-socket.connect("tcp://127.0.0.1:8000")
+socket.connect("tcp://127.0.0.1:9000")
 
 
 '''
@@ -45,14 +45,15 @@ while True:
     message = message.decode('utf-8')
     #print("Received reply %s" % (message))
     data = message.split(",")   
-    if len(data) == 4:
-        print("Left Glove Joint-level Ergonomics Data:")
-        print(list(map(float,data[0:20])))
-        print("Right Glove Joint-level Ergonomics Data:")
-        print(list(map(float,data[20:40])))
-    elif len(data) == 352:
-        parse_full_skeleton(data[0:176])
-        parse_full_skeleton(data[176:352])
-    elif len(data) == 176:
-        parse_full_skeleton(data[0:176])
+    print(data)
+    # if len(data) == 4:
+    #     print("Left Glove Joint-level Ergonomics Data:")
+    #     print(list(map(float,data[0:20])))
+    #     print("Right Glove Joint-level Ergonomics Data:")
+    #     print(list(map(float,data[20:40])))
+    # elif len(data) == 352:
+    #     parse_full_skeleton(data[0:176])
+    #     parse_full_skeleton(data[176:352])
+    # elif len(data) == 176:
+    #     parse_full_skeleton(data[0:176])
 

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<robot name="for_urdf_export">
+<robot name="for_urdf_right">
     <link name="palm">
         <inertial>
             <origin xyz="0.04408264816935304 0.021387857928123092 0.02271811661182397" rpy="0.0 0.0 0.0" />
@@ -16,6 +16,101 @@
             <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
             <geometry>
                 <mesh filename="meshes/palm.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="thumb_mcp1">
+        <inertial>
+            <origin xyz="0.000225007094667804 0.007015717072435812 -0.011848763937220338" rpy="0.0 -0.0 0.0" />
+            <mass value="0.1368678994313018" />
+            <inertia ixx="1.850335790135125e-05" iyy="1.2815907211302397e-05" izz="2.058441966236598e-05" ixy="-5.5542418332796e-08" iyz="-7.976482882837731e-08" ixz="3.266596126911686e-08" />
+        </inertial>
+        <visual name="thumb_mcp1_visual">
+            <origin xyz="0.00030000000000002914 0.005356636907728405 0.0007840340104174449" rpy="-3.141592653589793 -1.5707963267948852 0" />
+            <geometry>
+                <mesh filename="meshes/thumb_mcp1.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+        <collision name="thumb_mcp1_collision">
+            <origin xyz="0.00030000000000002914 0.005356636907728405 0.0007840340104174449" rpy="-3.141592653589793 -1.5707963267948852 0" />
+            <geometry>
+                <mesh filename="meshes/thumb_mcp1.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="thumb_mcp2">
+        <inertial>
+            <origin xyz="0.00692127206609797 2.4270045351215687e-09 -6.682093434129399e-10" rpy="0.0 -0.0 -1.4039453210987902e-47" />
+            <mass value="0.01935609811919093" />
+            <inertia ixx="4.069121186171332e-06" iyy="4.392023484606764e-06" izz="1.6616430847017248e-06" ixy="1.950074623264728e-13" iyz="6.552321163512805e-14" ixz="-5.88494638011025e-14" />
+        </inertial>
+        <visual name="thumb_mcp2_visual">
+            <origin xyz="0.015852648956663985 -0.011961920770611405 -2.531308496145357e-16" rpy="-3.1415926535897922 -1.0795345042441354e-15 -1.5707963267949083" />
+            <geometry>
+                <mesh filename="meshes/thumb_mcp2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+        <collision name="thumb_mcp2_collision">
+            <origin xyz="0.015852648956663985 -0.011961920770611405 -2.531308496145357e-16" rpy="-3.1415926535897922 -1.0795345042441354e-15 -1.5707963267949083" />
+            <geometry>
+                <mesh filename="meshes/thumb_mcp2.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="thumb_proximal">
+        <inertial>
+            <origin xyz="0.013377505039483744 0.0012292262844708368 -0.01403106094080699" rpy="0.0 -0.0 0.0" />
+            <mass value="0.17555980876954594" />
+            <inertia ixx="1.9882725828409675e-05" iyy="4.491953974664368e-05" izz="4.108519101658249e-05" ixy="-1.2625386189748632e-06" iyz="-1.8240294184549105e-07" ixz="2.4015417423564524e-07" />
+        </inertial>
+        <visual name="thumb_proximal_visual">
+            <origin xyz="0.05795295297370957 -0.043968715707238204 -0.008628676449369582" rpy="-2.0122792321332348e-16 5.504992458378667e-16 -1.5707963267948852" />
+            <geometry>
+                <mesh filename="meshes/thumb_proximal.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+        <collision name="thumb_proximal_collision">
+            <origin xyz="0.05795295297370957 -0.043968715707238204 -0.008628676449369582" rpy="-2.0122792321332348e-16 5.504992458378667e-16 -1.5707963267948852" />
+            <geometry>
+                <mesh filename="meshes/thumb_proximal.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="thumb_distal">
+        <inertial>
+            <origin xyz="0.024003654344851313 0.0003520385154470329 0.00023499513395870865" rpy="0.0 -0.0 8.758115402030107e-47" />
+            <mass value="0.25656730685939594" />
+            <inertia ixx="2.367200886555924e-05" iyy="0.00011410943092835026" izz="0.0001123577701833988" ixy="4.087395483663877e-06" iyz="-2.3556983042449205e-07" ixz="7.613707325151507e-07" />
+        </inertial>
+        <visual name="thumb_distal_visual">
+            <origin xyz="-0.07845968291139774 0.06255953846266742 0.06334291180733229" rpy="5.7176485768196114e-15 2.5181820190912467e-15 1.5707963267949068" />
+            <geometry>
+                <mesh filename="meshes/thumb_distal.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+        <collision name="thumb_distal_collision">
+            <origin xyz="-0.07845968291139774 0.06255953846266742 0.06334291180733229" rpy="5.7176485768196114e-15 2.5181820190912467e-15 1.5707963267949068" />
+            <geometry>
+                <mesh filename="meshes/thumb_distal.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </collision>
+    </link>
+    <link name="thumb_realtip">
+        <inertial>
+            <origin xyz="-1.7763568394002506e-16 -1.270095140171179e-15 3.7081449022480227e-16" rpy="0.0 -0.0 9.151580097495647e-92" />
+            <mass value="0.0005137812985558336" />
+            <inertia ixx="1.284453246390584e-09" iyy="1.284453246390584e-09" izz="1.2844532463871959e-09" ixy="2.8373215009513988e-39" iyz="2.117582368135751e-22" ixz="2.117582368135751e-22" />
+        </inertial>
+        <visual name="thumb_realtip_visual">
+            <origin xyz="-0.053401887312611473 0.20849999999999905 -0.013500000000000423" rpy="6.900874595585767e-16 -5.30561064654017e-15 -1.5707963267949083" />
+            <geometry>
+                <mesh filename="meshes/thumb_realtip.stl" scale="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+        <collision name="thumb_realtip_collision">
+            <origin xyz="-0.053401887312611473 0.20849999999999905 -0.013500000000000423" rpy="6.900874595585767e-16 -5.30561064654017e-15 -1.5707963267949083" />
+            <geometry>
+                <mesh filename="meshes/thumb_realtip.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
@@ -38,77 +133,77 @@
             </geometry>
         </collision>
     </link>
-    <link name="index_pip">
+    <link name="index_proximal">
         <inertial>
             <origin xyz="-0.011848763937220064 -0.007984282927563867 -0.0002250070946681504" rpy="-4.3269156561887814e-63 -0.0 0.0" />
             <mass value="0.1368678994313018" />
             <inertia ixx="2.0584419662366413e-05" iyy="1.2815907211302722e-05" izz="1.850335790135136e-05" ixy="-7.976482882849511e-08" iyz="5.554241833278713e-08" ixz="-3.266596126909642e-08" />
         </inertial>
-        <visual name="index_pip_visual">
+        <visual name="index_proximal_visual">
             <origin xyz="0.0007840340104177735 -0.009643363092271295 -0.0003000000000002423" rpy="-3.141592653589791 6.938893903907508e-17 -1.7094033107167696e-15" />
             <geometry>
-                <mesh filename="meshes/index_pip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/index_proximal.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
-        <collision name="index_pip_collision">
+        <collision name="index_proximal_collision">
             <origin xyz="0.0007840340104177735 -0.009643363092271295 -0.0003000000000002423" rpy="-3.141592653589791 6.938893903907508e-17 -1.7094033107167696e-15" />
             <geometry>
-                <mesh filename="meshes/index_pip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/index_proximal.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
-    <link name="index_dip">
+    <link name="index_inter">
         <inertial>
             <origin xyz="0.014677740494651745 -0.030710773820957344 0.00554194187847405" rpy="0.0 -0.0 0.0" />
             <mass value="0.17326501033259323" />
             <inertia ixx="3.4657405459753016e-05" iyy="2.734143629878741e-05" izz="3.0799287255352074e-05" ixy="1.6878173640200001e-07" iyz="4.003919462593389e-06" ixz="-1.0091124470241833e-07" />
         </inertial>
-        <visual name="index_dip_visual">
+        <visual name="index_inter_visual">
             <origin xyz="0.01921491183790507 -0.008432119146704756 0.021133352895225423" rpy="-3.1415926535897882 -1.5707963267948941 0" />
             <geometry>
-                <mesh filename="meshes/index_dip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/index_inter.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
-        <collision name="index_dip_collision">
+        <collision name="index_inter_collision">
             <origin xyz="0.01921491183790507 -0.008432119146704756 0.021133352895225423" rpy="-3.1415926535897882 -1.5707963267948941 0" />
             <geometry>
-                <mesh filename="meshes/index_dip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/index_inter.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
-    <link name="index_fingertip">
+    <link name="index_distal">
         <inertial>
-            <origin xyz="-4.77290423841481e-07 -0.02879894520854334 -0.0010496972665653037" rpy="0.0 -0.0 -2.7369110631344083e-48" />
+            <origin xyz="-4.772904238770081e-07 -0.028798945208543376 -0.001049697266565246" rpy="0.0 -0.0 -2.7369110631344083e-48" />
             <mass value="0.11971825858324693" />
-            <inertia ixx="2.120294377573633e-05" iyy="1.152522400301237e-05" izz="2.494219241839525e-05" ixy="7.29287397713745e-11" iyz="-8.504574809062297e-07" ixz="-3.825162137800991e-10" />
+            <inertia ixx="2.1202943775735898e-05" iyy="1.1525224003012478e-05" izz="2.4942192418395683e-05" ixy="7.292873998821493e-11" iyz="-8.504574809061484e-07" ixz="-3.8251621380720414e-10" />
         </inertial>
-        <visual name="index_fingertip_visual">
-            <origin xyz="8.260059303211165e-16 0.008885761613458136 0.013286424108534119" rpy="-3.1415926535897833 -1.5707963267948934 0" />
+        <visual name="index_distal_visual">
+            <origin xyz="7.993605777301127e-16 0.008885761613458101 0.013286424108534176" rpy="-3.1415926535897833 -1.5707963267948934 0" />
             <geometry>
-                <mesh filename="meshes/index_fingertip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/index_distal.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
-        <collision name="index_fingertip_collision">
-            <origin xyz="8.260059303211165e-16 0.008885761613458136 0.013286424108534119" rpy="-3.1415926535897833 -1.5707963267948934 0" />
+        <collision name="index_distal_collision">
+            <origin xyz="7.993605777301127e-16 0.008885761613458101 0.013286424108534176" rpy="-3.1415926535897833 -1.5707963267948934 0" />
             <geometry>
-                <mesh filename="meshes/index_fingertip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/index_distal.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
     <link name="index_realtip">
         <inertial>
-            <origin xyz="5.52891066263328e-16 8.260059303211165e-16 0.0" rpy="0.0 -0.0 0.0" />
+            <origin xyz="8.615330671091215e-16 -1.7763568394002505e-17 7.127631818093505e-16" rpy="0.0 -0.0 0.0" />
             <mass value="0.0005137812985558331" />
-            <inertia ixx="1.284453246390584e-09" iyy="1.2844532462923282e-09" izz="1.2844532464219242e-09" ixy="2.541098841762901e-21" iyz="-2.533137376745134e-40" ixz="1.2705494208814505e-21" />
+            <inertia ixx="1.2844532464193831e-09" iyy="1.284453246289787e-09" izz="1.284453246392278e-09" ixy="-2.5331373764362596e-40" iyz="2.752857078576476e-21" ixz="-1.6940658945086007e-21" />
         </inertial>
         <visual name="index_realtip_visual">
-            <origin xyz="0.1517000000000006 -0.020399999999998482 0.007376887312612546" rpy="3.14159265358979 -1.011257368347947e-14 1.5707963267948997" />
+            <origin xyz="-0.007376887312610956 -0.02040000000000008 0.15170000000000072" rpy="1.5707963267948986 -1.9926802555991712e-15 1.5707963267949066" />
             <geometry>
                 <mesh filename="meshes/index_realtip.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
         <collision name="index_realtip_collision">
-            <origin xyz="0.1517000000000006 -0.020399999999998482 0.007376887312612546" rpy="3.14159265358979 -1.011257368347947e-14 1.5707963267948997" />
+            <origin xyz="-0.007376887312610956 -0.02040000000000008 0.15170000000000072" rpy="1.5707963267948986 -1.9926802555991712e-15 1.5707963267949066" />
             <geometry>
                 <mesh filename="meshes/index_realtip.stl" scale="0.001 0.001 0.001" />
             </geometry>
@@ -133,60 +228,60 @@
             </geometry>
         </collision>
     </link>
-    <link name="middle_pip">
+    <link name="middle_proximal">
         <inertial>
             <origin xyz="-0.011848763937220307 -0.007984282927564132 -0.0002250070946681726" rpy="-3.1761486403764e-78 -0.0 0.0" />
             <mass value="0.1368678994313018" />
             <inertia ixx="2.058441966236598e-05" iyy="1.281590721130298e-05" izz="1.8503357901351793e-05" ixy="-7.976482882833248e-08" iyz="5.554241833284134e-08" ixz="-3.2665961269191286e-08" />
         </inertial>
-        <visual name="middle_pip_visual">
+        <visual name="middle_proximal_visual">
             <origin xyz="0.0007840340104174803 -0.009643363092271571 -0.00030000000000029114" rpy="-3.1415926535897905 2.834706814574471e-15 -1.7094033107167566e-15" />
             <geometry>
-                <mesh filename="meshes/middle_pip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/middle_proximal.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
-        <collision name="middle_pip_collision">
+        <collision name="middle_proximal_collision">
             <origin xyz="0.0007840340104174803 -0.009643363092271571 -0.00030000000000029114" rpy="-3.1415926535897905 2.834706814574471e-15 -1.7094033107167566e-15" />
             <geometry>
-                <mesh filename="meshes/middle_pip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/middle_proximal.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
-    <link name="middle_dip">
+    <link name="middle_inter">
         <inertial>
             <origin xyz="0.01467774049465128 -0.030710773820957788 0.005541941878473593" rpy="0.0 -0.0 0.0" />
             <mass value="0.17326501033259323" />
             <inertia ixx="3.465740545974998e-05" iyy="2.7341436298786326e-05" izz="3.0799287255351424e-05" ixy="1.6878173640237949e-07" iyz="4.003919462594419e-06" ixz="-1.0091124470213373e-07" />
         </inertial>
-        <visual name="middle_dip_visual">
+        <visual name="middle_inter_visual">
             <origin xyz="0.019214911837904844 -0.008432119146705306 0.021133352895225093" rpy="3.141592653589788 -1.5707963267948934 0" />
             <geometry>
-                <mesh filename="meshes/middle_dip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/middle_inter.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
-        <collision name="middle_dip_collision">
+        <collision name="middle_inter_collision">
             <origin xyz="0.019214911837904844 -0.008432119146705306 0.021133352895225093" rpy="3.141592653589788 -1.5707963267948934 0" />
             <geometry>
-                <mesh filename="meshes/middle_dip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/middle_inter.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
-    <link name="middle_fingertip">
+    <link name="middle_distal">
         <inertial>
-            <origin xyz="-4.7729042458311e-07 0.028798904084547595 0.0010496972665659389" rpy="0.0 -0.0 4.3790577010150533e-47" />
+            <origin xyz="-4.7729042458311e-07 -0.028798904084547595 -0.0010496972665659343" rpy="-6.162975822039155e-33 -0.0 4.926439913641935e-47" />
             <mass value="0.11971825858324643" />
-            <inertia ixx="2.1203240991855696e-05" iyy="1.152522400301204e-05" izz="2.4942489634515454e-05" ixy="-7.292638999795039e-11" iyz="-8.505280618340591e-07" ixz="3.825162134299783e-10" />
+            <inertia ixx="2.1203240991855696e-05" iyy="1.152522400301204e-05" izz="2.4942489634515454e-05" ixy="7.292638999870247e-11" iyz="-8.50528061834058e-07" ixz="-3.8251621343328495e-10" />
         </inertial>
-        <visual name="middle_fingertip_visual">
-            <origin xyz="3.6415315207705137e-16 0.006114238386542326 -0.013286424108533451" rpy="-1.8237097256422766e-15 1.5707963267948934 0" />
+        <visual name="middle_distal_visual">
+            <origin xyz="3.552713678800501e-16 -0.006114238386542326 0.013286424108533451" rpy="3.1415926535897913 -1.5707963267948941 0" />
             <geometry>
-                <mesh filename="meshes/middle_fingertip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/middle_distal.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </visual>
-        <collision name="middle_fingertip_collision">
-            <origin xyz="3.6415315207705137e-16 0.006114238386542326 -0.013286424108533451" rpy="-1.8237097256422766e-15 1.5707963267948934 0" />
+        <collision name="middle_distal_collision">
+            <origin xyz="3.552713678800501e-16 -0.006114238386542326 0.013286424108533451" rpy="3.1415926535897913 -1.5707963267948941 0" />
             <geometry>
-                <mesh filename="meshes/middle_fingertip.stl" scale="0.001 0.001 0.001" />
+                <mesh filename="meshes/middle_distal.stl" scale="0.001 0.001 0.001" />
             </geometry>
         </collision>
     </link>
@@ -209,186 +304,91 @@
             </geometry>
         </collision>
     </link>
-    <link name="thumb_pip1">
-        <inertial>
-            <origin xyz="0.000225007094667804 0.007015717072435812 -0.011848763937220338" rpy="0.0 -0.0 0.0" />
-            <mass value="0.1368678994313018" />
-            <inertia ixx="1.850335790135125e-05" iyy="1.2815907211302397e-05" izz="2.058441966236598e-05" ixy="-5.5542418332796e-08" iyz="-7.976482882837731e-08" ixz="3.266596126911686e-08" />
-        </inertial>
-        <visual name="thumb_pip1_visual">
-            <origin xyz="0.00030000000000002914 0.005356636907728405 0.0007840340104174449" rpy="-3.141592653589793 -1.5707963267948852 0" />
-            <geometry>
-                <mesh filename="meshes/thumb_pip1.stl" scale="0.001 0.001 0.001" />
-            </geometry>
-        </visual>
-        <collision name="thumb_pip1_collision">
-            <origin xyz="0.00030000000000002914 0.005356636907728405 0.0007840340104174449" rpy="-3.141592653589793 -1.5707963267948852 0" />
-            <geometry>
-                <mesh filename="meshes/thumb_pip1.stl" scale="0.001 0.001 0.001" />
-            </geometry>
-        </collision>
-    </link>
-    <link name="thumb_pip2">
-        <inertial>
-            <origin xyz="0.00692127206609797 2.4270045351215687e-09 -6.682093434129399e-10" rpy="0.0 -0.0 -1.4039453210987902e-47" />
-            <mass value="0.01935609811919093" />
-            <inertia ixx="4.069121186171332e-06" iyy="4.392023484606764e-06" izz="1.6616430847017248e-06" ixy="1.950074623264728e-13" iyz="6.552321163512805e-14" ixz="-5.88494638011025e-14" />
-        </inertial>
-        <visual name="thumb_pip2_visual">
-            <origin xyz="0.015852648956663985 -0.011961920770611405 -2.531308496145357e-16" rpy="-3.1415926535897922 -1.0795345042441354e-15 -1.5707963267949083" />
-            <geometry>
-                <mesh filename="meshes/thumb_pip2.stl" scale="0.001 0.001 0.001" />
-            </geometry>
-        </visual>
-        <collision name="thumb_pip2_collision">
-            <origin xyz="0.015852648956663985 -0.011961920770611405 -2.531308496145357e-16" rpy="-3.1415926535897922 -1.0795345042441354e-15 -1.5707963267949083" />
-            <geometry>
-                <mesh filename="meshes/thumb_pip2.stl" scale="0.001 0.001 0.001" />
-            </geometry>
-        </collision>
-    </link>
-    <link name="thumb_dip">
-        <inertial>
-            <origin xyz="0.013377505039483744 0.0012292262844708368 -0.01403106094080699" rpy="0.0 -0.0 0.0" />
-            <mass value="0.17555980876954594" />
-            <inertia ixx="1.9882725828409675e-05" iyy="4.491953974664368e-05" izz="4.108519101658249e-05" ixy="-1.2625386189748632e-06" iyz="-1.8240294184549105e-07" ixz="2.4015417423564524e-07" />
-        </inertial>
-        <visual name="thumb_dip_visual">
-            <origin xyz="0.05795295297370957 -0.043968715707238204 -0.008628676449369582" rpy="-2.0122792321332348e-16 5.504992458378667e-16 -1.5707963267948852" />
-            <geometry>
-                <mesh filename="meshes/thumb_dip.stl" scale="0.001 0.001 0.001" />
-            </geometry>
-        </visual>
-        <collision name="thumb_dip_collision">
-            <origin xyz="0.05795295297370957 -0.043968715707238204 -0.008628676449369582" rpy="-2.0122792321332348e-16 5.504992458378667e-16 -1.5707963267948852" />
-            <geometry>
-                <mesh filename="meshes/thumb_dip.stl" scale="0.001 0.001 0.001" />
-            </geometry>
-        </collision>
-    </link>
-    <link name="thumb_fingertip">
-        <inertial>
-            <origin xyz="0.024003654344851313 0.0003520385154470329 0.00023499513395870865" rpy="0.0 -0.0 8.758115402030107e-47" />
-            <mass value="0.25656730685939594" />
-            <inertia ixx="2.367200886555924e-05" iyy="0.00011410943092835026" izz="0.0001123577701833988" ixy="4.087395483663877e-06" iyz="-2.3556983042449205e-07" ixz="7.613707325151507e-07" />
-        </inertial>
-        <visual name="thumb_fingertip_visual">
-            <origin xyz="-0.07845968291139774 0.06255953846266742 0.06334291180733229" rpy="5.7176485768196114e-15 2.5181820190912467e-15 1.5707963267949068" />
-            <geometry>
-                <mesh filename="meshes/thumb_fingertip.stl" scale="0.001 0.001 0.001" />
-            </geometry>
-        </visual>
-        <collision name="thumb_fingertip_collision">
-            <origin xyz="-0.07845968291139774 0.06255953846266742 0.06334291180733229" rpy="5.7176485768196114e-15 2.5181820190912467e-15 1.5707963267949068" />
-            <geometry>
-                <mesh filename="meshes/thumb_fingertip.stl" scale="0.001 0.001 0.001" />
-            </geometry>
-        </collision>
-    </link>
-    <link name="thumb_realtip">
-        <inertial>
-            <origin xyz="-1.7763568394002506e-16 -1.270095140171179e-15 3.7081449022480227e-16" rpy="0.0 -0.0 9.151580097495647e-92" />
-            <mass value="0.0005137812985558336" />
-            <inertia ixx="1.284453246390584e-09" iyy="1.284453246390584e-09" izz="1.2844532463871959e-09" ixy="2.8373215009513988e-39" iyz="2.117582368135751e-22" ixz="2.117582368135751e-22" />
-        </inertial>
-        <visual name="thumb_realtip_visual">
-            <origin xyz="-0.053401887312611473 0.20849999999999905 -0.013500000000000423" rpy="6.900874595585767e-16 -5.30561064654017e-15 -1.5707963267949083" />
-            <geometry>
-                <mesh filename="meshes/thumb_realtip.stl" scale="0.001 0.001 0.001" />
-            </geometry>
-        </visual>
-        <collision name="thumb_realtip_collision">
-            <origin xyz="-0.053401887312611473 0.20849999999999905 -0.013500000000000423" rpy="6.900874595585767e-16 -5.30561064654017e-15 -1.5707963267949083" />
-            <geometry>
-                <mesh filename="meshes/thumb_realtip.stl" scale="0.001 0.001 0.001" />
-            </geometry>
-        </collision>
-    </link>
     <joint name="palm_Revolute-1" type="continuous">
+        <origin xyz="0.06849999999999999 0.0495 0.0131" rpy="1.5707963267948943 -0.0 0.0" />
+        <parent link="palm" />
+        <child link="thumb_mcp1" />
+        <axis xyz="0.0 -2.2920118444087085e-15 1.0" />
+    </joint>
+    <joint name="thumb_mcp1_Revolute-2" type="continuous">
+        <origin xyz="0.01429999999999997 3.1086244689504386e-17 -0.012999999999999998" rpy="1.5707963267948981 3.944304526105086e-31 -1.2030572237243167e-30" />
+        <parent link="thumb_mcp1" />
+        <child link="thumb_mcp2" />
+        <axis xyz="-1.0 1.2818309776324673e-45 -3.178737046341918e-17" />
+    </joint>
+    <joint name="thumb_mcp2_Revolute-3" type="continuous">
+        <origin xyz="0.01700000000000001 1.7763568394002505e-17 -0.014499999999999996" rpy="-3.1415926535897922 1.2030572237243175e-30 -6.767517584326818e-32" />
+        <parent link="thumb_mcp2" />
+        <child link="thumb_proximal" />
+        <axis xyz="0.0 0.0 1.0" />
+    </joint>
+    <joint name="thumb_proximal_Revolute-4" type="continuous">
+        <origin xyz="0.0466 0.0 -0.014299999999999997" rpy="-1.9428902930940565e-16 -3.2751579226442197e-15 1.189074479488685e-31" />
+        <parent link="thumb_proximal" />
+        <child link="thumb_distal" />
+        <axis xyz="3.27515792264423e-15 -1.94289029309406e-16 1.0000000000000018" />
+    </joint>
+    <joint name="thumb_distal_Rigid_thumb" type="fixed">
+        <origin xyz="0.062099999999999794 -0.0004999999999999894 4.9999999999794655e-05" rpy="-3.141592653589793 3.2751579226442236e-15 -1.0811969824151546e-30" />
+        <parent link="thumb_distal" />
+        <child link="thumb_realtip" />
+    </joint>
+    <joint name="palm_Revolute-6" type="continuous">
         <origin xyz="0.0637 -0.013000000000000001 0.017275000000000002" rpy="-3.141592653589793 -1.5707963267948966 0" />
         <parent link="palm" />
         <child link="index_mcp_joint" />
         <axis xyz="0.0 3.3709870223533754e-16 1.0" />
     </joint>
-    <joint name="index_mcp_joint_Revolute-2" type="continuous">
+    <joint name="index_mcp_joint_Revolute-7" type="continuous">
         <origin xyz="0.012199999999999973 0.03810000000000001 0.014499999999999985" rpy="3.1415926535897913 3.944304526105059e-31 2.8022431570960223e-32" />
         <parent link="index_mcp_joint" />
-        <child link="index_pip" />
+        <child link="index_proximal" />
         <axis xyz="1.0 1.0970034457409265e-32 -5.997407798921492e-16" />
     </joint>
-    <joint name="index_pip_Revolute-3" type="continuous">
+    <joint name="index_proximal_Revolute-8" type="continuous">
         <origin xyz="-0.012999999999999987 -0.015000000000000027 0.014399999999999977" rpy="-8.129871583511721e-16 1.570796326794895 0" />
-        <parent link="index_pip" />
-        <child link="index_dip" />
+        <parent link="index_proximal" />
+        <child link="index_inter" />
         <axis xyz="1.0 3.944304526105059e-31 1.21876284056415e-17" />
     </joint>
-    <joint name="index_dip_Revolute-4" type="continuous">
+    <joint name="index_inter_Revolute-9" type="continuous">
         <origin xyz="0.014450000000000003 -0.03610000000000001 -2.886579864025407e-17" rpy="7.635123965975653e-16 2.8730071914463814e-16 2.335717952496475e-31" />
-        <parent link="index_dip" />
-        <child link="index_fingertip" />
+        <parent link="index_inter" />
+        <child link="index_distal" />
         <axis xyz="0.9999999999999962 -4.662936703425647e-15 2.521624556202696e-15" />
     </joint>
-    <joint name="index_fingertip_Rigid_index" type="fixed">
-        <origin xyz="-2.3092638912203257e-16 -0.04950000000000003 -0.0005000000000000049" rpy="-1.5707963267948966 -1.5707963267948941 0" />
-        <parent link="index_fingertip" />
+    <joint name="index_distal_Rigid_index" type="fixed">
+        <origin xyz="-2.3092638912203257e-16 -0.04950000000000003 -0.0005000000000000049" rpy="4.947476175360935e-17 -2.8730071914463834e-16 -1.8006098300157965e-31" />
+        <parent link="index_distal" />
         <child link="index_realtip" />
     </joint>
-    <joint name="palm_Revolute-6" type="continuous">
+    <joint name="palm_Revolute-11" type="continuous">
         <origin xyz="0.005699999999999999 -0.013000000000000001 0.017275000000000002" rpy="-3.1415926535897927 -1.5707963267948966 0" />
         <parent link="palm" />
         <child link="middle_mcp_joint" />
         <axis xyz="0.0 3.9260985346659443e-16 1.0" />
     </joint>
-    <joint name="middle_mcp_joint_Revolute-7" type="continuous">
+    <joint name="middle_mcp_joint_Revolute-12" type="continuous">
         <origin xyz="0.01219999999999999 0.03810000000000001 0.014499999999999985" rpy="3.1415926535897913 2.5353555998624977e-47 6.457697323376579e-32" />
         <parent link="middle_mcp_joint" />
-        <child link="middle_pip" />
+        <child link="middle_proximal" />
         <axis xyz="1.0 -3.164352580666406e-32 -5.9974077989215e-16" />
     </joint>
-    <joint name="middle_pip_Revolute-8" type="continuous">
+    <joint name="middle_proximal_Revolute-13" type="continuous">
         <origin xyz="-0.012999999999999989 -0.015000000000000027 0.014399999999999977" rpy="-8.129871583511721e-16 1.570796326794895 0" />
-        <parent link="middle_pip" />
-        <child link="middle_dip" />
+        <parent link="middle_proximal" />
+        <child link="middle_inter" />
         <axis xyz="1.0 0.0 1.21876284056415e-17" />
     </joint>
-    <joint name="middle_dip_Revolute-9" type="continuous">
-        <origin xyz="0.01445 -0.03610000000000001 -2.886579864025407e-17" rpy="-3.1415926535897927 -5.970058958597673e-16 -1.0770038057096886e-30" />
-        <parent link="middle_dip" />
-        <child link="middle_fingertip" />
-        <axis xyz="-0.9999999999999968 1.3322676295501987e-15 -2.2230562504849705e-16" />
+    <joint name="middle_inter_Revolute-14" type="continuous">
+        <origin xyz="0.01445 -0.03610000000000001 -2.886579864025407e-17" rpy="7.63512396597558e-16 2.873007191446387e-16 -5.552891099713655e-31" />
+        <parent link="middle_inter" />
+        <child link="middle_distal" />
+        <axis xyz="0.9999999999999968 1.3322676295501985e-15 6.620009899558993e-16" />
     </joint>
-    <joint name="middle_fingertip_Rigid_middle" type="fixed">
-        <origin xyz="6.661338147750939e-17 0.049499999999999926 0.0005000000000000072" rpy="-3.141592653589793 -5.970058958597633e-16 -7.411401895093593e-31" />
-        <parent link="middle_fingertip" />
+    <joint name="middle_distal_Rigid_middle" type="fixed">
+        <origin xyz="6.661338147750939e-17 -0.049499999999999926 -0.0005000000000000027" rpy="4.94747617536117e-17 -2.8730071914463617e-16 7.4274998325118455e-31" />
+        <parent link="middle_distal" />
         <child link="middle_realtip" />
-    </joint>
-    <joint name="palm_Revolute-11" type="continuous">
-        <origin xyz="0.06849999999999999 0.0495 0.0131" rpy="1.5707963267948943 -0.0 0.0" />
-        <parent link="palm" />
-        <child link="thumb_pip1" />
-        <axis xyz="0.0 -2.2920118444087085e-15 1.0" />
-    </joint>
-    <joint name="thumb_pip1_Revolute-12" type="continuous">
-        <origin xyz="0.01429999999999997 3.1086244689504386e-17 -0.012999999999999998" rpy="1.5707963267948981 3.944304526105086e-31 -1.2030572237243167e-30" />
-        <parent link="thumb_pip1" />
-        <child link="thumb_pip2" />
-        <axis xyz="-1.0 1.2818309776324673e-45 -3.178737046341918e-17" />
-    </joint>
-    <joint name="thumb_pip2_Revolute-13" type="continuous">
-        <origin xyz="0.01700000000000001 1.7763568394002505e-17 -0.014499999999999996" rpy="-3.1415926535897922 1.2030572237243175e-30 -6.767517584326818e-32" />
-        <parent link="thumb_pip2" />
-        <child link="thumb_dip" />
-        <axis xyz="0.0 0.0 1.0" />
-    </joint>
-    <joint name="thumb_dip_Revolute-14" type="continuous">
-        <origin xyz="0.0466 0.0 -0.014299999999999997" rpy="-1.9428902930940565e-16 -3.2751579226442197e-15 1.189074479488685e-31" />
-        <parent link="thumb_dip" />
-        <child link="thumb_fingertip" />
-        <axis xyz="3.27515792264423e-15 -1.94289029309406e-16 1.0000000000000018" />
-    </joint>
-    <joint name="thumb_fingertip_Rigid_thumb" type="fixed">
-        <origin xyz="0.062099999999999794 -0.0004999999999999894 4.9999999999794655e-05" rpy="-3.141592653589793 3.2751579226442236e-15 -1.0811969824151546e-30" />
-        <parent link="thumb_fingertip" />
-        <child link="thumb_realtip" />
     </joint>
 </robot>
