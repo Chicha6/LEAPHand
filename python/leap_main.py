@@ -31,7 +31,6 @@ class LeapNode:
         self.kI = 0
         self.kD = 200
         self.curr_lim = 350
-        # self.prev_pos = self.pos = self.curr_pos = lhu.allegro_to_LEAPhand(np.zeros(16))
         self.prev_pos = self.pos = self.curr_pos = lhu.allegro_to_LEAPhand(np.zeros(12))
 
         #You can put the correct port here or have the node auto-search for a hand at the first 3 ports.
@@ -39,11 +38,10 @@ class LeapNode:
         # For example: /dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT7W91VW-if00-port0
 
         # Motor IDs, can be changed in Dynamixel Wizard
-        # Index  -> 0: MCP side, 1: MCP flex, 2: Pip flex, 3: Dip flex
-        # Middle -> 4: MCP side, 5: MCP flex, 6: Pip flex, 7: Dip flex
-        # THumb  -> 8: MCP side, 9: MCP flex, 10: Pip flex, 11: Dip flex
+        # Index  -> 0: MCP flex, 1: MCP side, 2: Pip flex, 3: Dip flex
+        # Middle -> 4: MCP flex, 5: MCP side, 6: Pip flex, 7: Dip flex
+        # THumb  -> 8: MCP flex, 9: MCP side, 10: Pip flex, 11: Dip flex
         self.motors = motors = [0,1,2,3,4,5,6,7,8,9,10,11]
-
 
         try:
             self.dxl_client = DynamixelClient(motors, '/dev/ttyUSB0', 4000000)

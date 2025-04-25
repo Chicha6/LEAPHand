@@ -1,85 +1,13 @@
 import pybullet as p
 import time
 import os
-import numpy as np
 import zmq
-from leap_hand_utils.dynamixel_client import *
-import leap_hand_utils.leap_hand_utils as lhu
+from leap_main import LeapNode
 import time
 import sys
 
 leftHandID = "558097a3"
 rightHandID = "e13e29f2"
-
-class LeapNode:
-    def __init__(self):
-        ####Some parameters
-        # I recommend you keep the current limit from 350 for the lite, and 550 for the full hand
-        # Increase KP if the hand is too weak, decrease if it's jittery.
-        self.kP = 600
-        self.kI = 0
-        self.kD = 200
-        self.curr_lim = 350
-        self.prev_pos = self.pos = self.curr_pos = lhu.allegro_to_LEAPhand(np.zeros(12))
-        # You can put the correct port here or have the node auto-search for a hand at the first 3 ports.
-        # For example ls /dev/serial/by-id/* to find your LEAP Hand. Then use the result.  
-        # For example: /dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT7W91VW-if00-port0
-        self.motors = motors = [0,1,2,3,4,5,6,7,8,9,10,11]
-
-        try:
-            self.dxl_client = DynamixelClient(motors, '/dev/ttyUSB0', 4000000)
-            self.dxl_client.connect()
-        except Exception:
-            try:
-                self.dxl_client = DynamixelClient(motors, '/dev/ttyUSB1', 4000000)
-                self.dxl_client.connect()
-            except Exception:
-                self.dxl_client = DynamixelClient(motors, 'COM3', 4000000)
-                self.dxl_client.connect()
-        #Enables position-current control mode and the default parameters, it commands a position and then caps the current so the motors don't overload
-        self.dxl_client.sync_write(motors, np.ones(len(motors))*5, 11, 1)
-        self.dxl_client.set_torque_enabled(motors, True)
-        self.dxl_client.sync_write(motors, np.ones(len(motors)) * self.kP, 84, 2) # Pgain stiffness     
-        self.dxl_client.sync_write([0,4,8], np.ones(3) * (self.kP * 0.75), 84, 2) # Pgain stiffness for side to side should be a bit less
-        self.dxl_client.sync_write(motors, np.ones(len(motors)) * self.kI, 82, 2) # Igain
-        self.dxl_client.sync_write(motors, np.ones(len(motors)) * self.kD, 80, 2) # Dgain damping
-        self.dxl_client.sync_write([0,4,8], np.ones(3) * (self.kD * 0.75), 80, 2) # Dgain damping for side to side should be a bit less
-        #Max at current (in unit 1ma) so don't overheat and grip too hard #500 normal or #350 for lite
-        self.dxl_client.sync_write(motors, np.ones(len(motors)) * self.curr_lim, 102, 2)
-        # self.dxl_client.write_desired_pos(self.motors, self.curr_pos)
-
-    #Receive LEAP pose and directly control the robot
-    def set_leap(self, pose):
-        self.prev_pos = self.curr_pos
-        self.curr_pos = np.array(pose)
-        self.dxl_client.write_desired_pos(self.motors, self.curr_pos)
-    #allegro compatibility joint angles.  It adds 180 to make the fully open position at 0 instead of 180
-    def set_allegro(self, pose):
-        pose = lhu.allegro_to_LEAPhand(pose, zeros=False)
-        self.prev_pos = self.curr_pos
-        self.curr_pos = np.array(pose)
-        self.dxl_client.write_desired_pos(self.motors, self.curr_pos)
-    #Sim compatibility for policies, it assumes the ranges are [-1,1] and then convert to leap hand ranges.
-    def set_ones(self, pose):
-        pose = lhu.sim_ones_to_LEAPhand(np.array(pose))
-        self.prev_pos = self.curr_pos
-        self.curr_pos = np.array(pose)
-        self.dxl_client.write_desired_pos(self.motors, self.curr_pos)
-    #read position of the robot
-    def read_pos(self):
-        return self.dxl_client.read_pos()
-    #read velocity
-    def read_vel(self):
-        return self.dxl_client.read_vel()
-    #read current
-    def read_cur(self):
-        return self.dxl_client.read_cur()
-    #These combined commands are faster FYI and return a list of data
-    def pos_vel(self):
-        return self.dxl_client.read_pos_vel()
-    #These combined commands are faster FYI and return a list of data
-    def pos_vel_eff_srv(self):
-        return self.dxl_client.read_pos_vel_cur()
 
 class LeapPybulletIK():
     def __init__(self, endEffectors, URDFOffset_left=None, URDFOffset_right=None):
@@ -87,9 +15,9 @@ class LeapPybulletIK():
         p.connect(p.GUI)
         path_src = os.path.abspath(__file__)
         path_src = os.path.dirname(path_src)
-        path_src_right = os.path.join(path_src, "right_hand_mesh/right_hand.urdf")
         path_src_left = os.path.join(path_src, "left_hand_mesh/left_hand.urdf")
-
+        path_src_right = os.path.join(path_src, "right_hand_mesh/right_hand.urdf")
+        
         # Here endEffector refers to the target joints(not links)
         # These correspond to the dip joints and fingertips of thumb, index, and middle
         self.leapEndEffectorIndex = endEffectors
@@ -118,6 +46,7 @@ class LeapPybulletIK():
         p.setRealTimeSimulation(useRealTimeSimulation)
         self.create_target_vis()
 
+    # Initialise visualisers for target positions of end effectors
     def create_target_vis(self):
         ball_radius = 0.003
         ball_shape = p.createCollisionShape(p.GEOM_SPHERE, radius=ball_radius)
@@ -134,6 +63,7 @@ class LeapPybulletIK():
             p.changeVisualShape(self.ballMbt[2*i], -1, rgbaColor=[0, 0, 1, 1])
             p.changeVisualShape(self.ballMbt[2*i+1], -1, rgbaColor=[1, 0, 0, 1])
 
+    # Update position of visualisers of target positions
     def update_target_vis(self, hand_pos_left=None, hand_pos_right=None):
         if(hand_pos_left):
             for i in range(len(self.leapEndEffectorIndex)):
@@ -144,7 +74,7 @@ class LeapPybulletIK():
                 _, current_orientation = p.getBasePositionAndOrientation(self.ballMbt[i+len(self.leapEndEffectorIndex)])
                 p.resetBasePositionAndOrientation(self.ballMbt[i+len(self.leapEndEffectorIndex)], hand_pos_right[i], current_orientation)
         
-    # Computes and returns joint angles using IK and updates joints in simulation
+    # Solves IK and return joint angles
     def compute_IK(self, hand_pos_left=None, hand_pos_right=None):
         p.stepSimulation()     
         jointAnglesLeft = None
@@ -176,6 +106,7 @@ class LeapPybulletIK():
         )
         return jointAnglesLeft, jointAnglesRight
     
+    # Set motor position in simulation
     def setMotorControl(self, jointAnglesLeft, jointAnglesRight):
 
         combined_jointAngles_left = None
@@ -320,7 +251,7 @@ def pybulletCalibration(socket, side):
 
 def main(**kwargs):
 
-    # leap_hand = LeapNode()
+    leap_hand = LeapNode()
     context = zmq.Context()
     print("Connecting to SDK")
     socket = context.socket(zmq.PULL)
@@ -365,7 +296,6 @@ def main(**kwargs):
                     leappybulletik = LeapPybulletIK(endEffectors,URDFOffset_left=URDFOffset_left)
                     isCalibrated = True
                     isLeftOn = True
-
                 #right hand only
                 if(manusData[0] == rightHandID):
                     URDFOffset_right, ManusToLeapScaling_right, indexXOffset_right = pybulletCalibration(socket, 1)
@@ -393,7 +323,7 @@ def main(**kwargs):
         message = message.decode('utf-8')
         manusData = message.split(",")   
 
-        #both hands in use
+        #load leftTargetPosList and rightTargetPosList (if both hands in use)
         if(len(manusData) > 19):
             if(manusData[0] == leftHandID):
                 targetCoord = list(map(float,manusData[1:19]))
@@ -409,14 +339,7 @@ def main(**kwargs):
                 targetCoord = list(map(float,manusData[20:38]))
                 for n in range(6):
                     leftTargetPosList.append(targetCoord[3*n:3*n+3])
-            targetCoord = list(map(float,manusData[1:19]))
-            if(manusData[0] == leftHandID):
-                for n in range(6):
-                    leftTargetPosList.append(targetCoord[3*n:3*n+3])
-            else:
-                for n in range(6):
-                    rightTargetPosList.append(targetCoord[3*n:3*n+3])
-        #one hand in use only
+        #load leftTargetPosList or rightTargetPosList (if one hand in use)   
         else:
             targetCoord = list(map(float,manusData[1:19]))
             if(manusData[0] == leftHandID):
@@ -426,8 +349,9 @@ def main(**kwargs):
                 for n in range(6):
                     rightTargetPosList.append(targetCoord[3*n:3*n+3])
 
-        # MANUS to LEAP scaling
+        # MANUS to LEAP scaling (left hand)
         if(isLeftOn):
+            #to use auto calibration values
             if(isCalibrated):
                 for n in range(6):
                     for i in range(3):
@@ -436,6 +360,7 @@ def main(**kwargs):
                             leftTargetPosList[n][0] += indexXOffset_left
                 for n in range(6):
                     leftTargetPosList[n][0] += -0.45
+            #to manually adjust scaling and offsets
             else:
                 for i in range(3):
                     leftTargetPosList[0][i] = leftTargetPosList[0][i] * 1.45
@@ -449,13 +374,16 @@ def main(**kwargs):
                 for n in range(6):
                     leftTargetPosList[n][0] += -0.45 + 0.019
          
+        # MANUS to LEAP scaling (left hand)
         if(isRightOn):
+            #to use auto calibration values
             if(isCalibrated):
                 for n in range(6):
                     for i in range(3):
                         rightTargetPosList[n][i] = rightTargetPosList[n][i] * ManusToLeapScaling_right[n//2]
                         if((n == 2 or n == 3) and i == 0):
                             rightTargetPosList[n][0] += indexXOffset_right
+            #to manually adjust scaling and offsets
             else:
                 for i in range(3):
                     rightTargetPosList[0][i] = rightTargetPosList[0][i] * 1.45
@@ -477,9 +405,15 @@ def main(**kwargs):
         #         leapInputAnglesRight.append(IKAngles_right[count] * -1 + 3.14)
         #     else:
         #         leapInputAnglesRight.append(IKAngles_right[count] + 3.14)
+        
+        # for count in range(12):
+        #     if(count in [0,1,2,3,5,9]):
+        #         leapInputAnglesRight.append(IKAngles_right[count] * -1 + 3.14)
+        #     else:
+        #         leapInputAnglesRight.append(IKAngles_right[count] + 3.14)
 
         # print(leapInputAnglesRight)
-        # leap_hand.set_leap(leapInputAnglesRight)
+        leap_hand.set_leap(leapInputAnglesRight)
 
         time.sleep(.015)
 

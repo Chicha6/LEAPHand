@@ -39,8 +39,6 @@ def parse_full_skeleton(data):
 while True:
     #wait for message
     message = socket.recv()
-    # print("4")
-    # print(message)
     #receive the message from the socket
     message = message.decode('utf-8')
     #print("Received reply %s" % (message))

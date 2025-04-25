@@ -1,15 +1,13 @@
 import time
 import zmq
-from leap_hand_utils.dynamixel_client import *
-import leap_hand_utils.leap_hand_utils as lhu
 import time
 import sys
+import numpy as np
 from leap_main import LeapNode
 from manusleap_ik import LeapPybulletIK, pybulletCalibration, p
 
 leftHandID = "558097a3"
 rightHandID = "e13e29f2"
-
 
 def main(**kwargs):
     
@@ -78,17 +76,35 @@ def main(**kwargs):
             isRightOn = True
         leappybulletik = LeapPybulletIK([3,4])
 
+
+    #start of teleop
     for count in range(100000):
         leftTargetPosList.clear()
         rightTargetPosList.clear()
 
+    ##start of IK
         messageRaw = socketRaw.recv()
         messageRaw = messageRaw.decode('utf-8')
         manusRawData = messageRaw.split(",")      
     	
-        # Populate leftTargetPosList and rightTargetPosList
-        #one hand only
-        if(len(manusRawData) < 20):
+        #load leftTargetPosList and rightTargetPosList (if both hands in use)
+        if(len(manusRawData) > 19):
+            if(manusRawData[0] == leftHandID):
+                targetCoord = list(map(float,manusRawData[1:7]))
+                for n in range(2):
+                    leftTargetPosList.append(targetCoord[3*n:3*n+3])
+                targetCoord = list(map(float,manusRawData[20:26]))
+                for n in range(2):
+                    rightTargetPosList.append(targetCoord[3*n:3*n+3])
+            else:
+                targetCoord = list(map(float,manusRawData[1:7]))
+                for n in range(2):
+                    rightTargetPosList.append(targetCoord[3*n:3*n+3])
+                targetCoord = list(map(float,manusRawData[20:26]))
+                for n in range(2):
+                    leftTargetPosList.append(targetCoord[3*n:3*n+3])
+        #load leftTargetPosList or rightTargetPosList (if one hand in use)
+        else:
             targetCoord = list(map(float,manusRawData[1:7]))
             if(manusRawData[0] == leftHandID):
                 for n in range(2):
@@ -96,42 +112,31 @@ def main(**kwargs):
             else:
                 for n in range(2):
                     rightTargetPosList.append(targetCoord[3*n:3*n+3])
-        #both hands
-        else:
-            if(manusRawData[0] == leftHandID):
-                targetCoord = list(map(float,manusRawData[1:7]))
-                for n in range(2):
-                    leftTargetPosList.append(targetCoord[3*n:3*n+3])
-                targetCoord = list(map(float,manusRawData[20:26]))
-                for n in range(2):
-                    rightTargetPosList.append(targetCoord[3*n:3*n+3])
-            else:
-                targetCoord = list(map(float,manusRawData[1:7]))
-                for n in range(2):
-                    rightTargetPosList.append(targetCoord[3*n:3*n+3])
-                targetCoord = list(map(float,manusRawData[20:26]))
-                for n in range(2):
-                    leftTargetPosList.append(targetCoord[3*n:3*n+3])
         
-        # MANUS to LEAP scaling for IK simulation
+        # MANUS to LEAP scaling (left hand)
         if(isLeftOn):
+            #to use auto calibration values
             if(isCalibrated):
                 for n in range(2):
                     for i in range(3):
                         leftTargetPosList[n][i] = leftTargetPosList[n][i] * ManusToLeapScaling_left[n//2]
                 for n in range(2):
                     leftTargetPosList[n][0] += -0.45
+            #to manually adjust scaling and offsets
             else:
                 for i in range(3):
                     leftTargetPosList[0][i] = leftTargetPosList[0][i] * 1.45
                     leftTargetPosList[1][i] = leftTargetPosList[1][i] * 1.45
                 for n in range(2):
                     leftTargetPosList[n][0] += -0.45 + 0.019
+        # MANUS to LEAP scaling (left hand)
         if(isRightOn):
+            #to use auto calibration values
             if(isCalibrated):
                 for n in range(2):
                     for i in range(3):
                         rightTargetPosList[n][i] = rightTargetPosList[n][i] * ManusToLeapScaling_right[n//2]
+            #to manually adjust scaling
             else:
                 for i in range(3):
                     rightTargetPosList[0][i] = rightTargetPosList[0][i] * 1.45
@@ -140,7 +145,9 @@ def main(**kwargs):
         
         leappybulletik.update_target_vis(leftTargetPosList, rightTargetPosList)
         IKAngles_left, IKAngles_right = leappybulletik.compute_IK(hand_pos_left=leftTargetPosList, hand_pos_right=rightTargetPosList)
+    ##end of IK
 
+    ##start of FK
         messageErgo = socketErgo.recv()
         messageErgo = messageErgo.decode('utf-8')
         manusErgoData = messageErgo.split(",")
@@ -164,13 +171,12 @@ def main(**kwargs):
         # Adjusting thumb joints and reordering joint angles in rightData
         # rightData = [60 - .8*rightData[1] + 180] + [-30 + 50 + rightData[0] + 180] + [2.5*rightData[2] + 180] + [rightData[3] + 180] + [rightData[5], rightData[4]] + rightData[6:8] + [rightData[9], rightData[8]] + rightData[10:12]
         
-        
-        leappybulletik.setMotorControl(IKAngles_left[:4] + leftErgoData, IKAngles_right[0:4] + rightErgoData)
-       
         # joint angle polarity and magnitude correction for LEAP hand control
         for count in range(4):
             leapInputAnglesRight[count] = IKAngles_right[count] * -1 + 3.14
 
+    ##end of FK
+        leappybulletik.setMotorControl(IKAngles_left[:4] + leftErgoData, IKAngles_right[0:4] + rightErgoData)
         leap_hand.set_leap(leapInputAnglesRight)
 
         time.sleep(.015)
