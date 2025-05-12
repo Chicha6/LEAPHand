@@ -26,7 +26,7 @@ class LeapPybulletIK():
         self.bodyIdLeft = p.loadURDF( 
             path_src_left,
             [URDFOffset_left[0], URDFOffset_left[1], URDFOffset_left[2]] if URDFOffset_left != None 
-            else [-0.45,0.120,-0.016],
+            else [-0.481,0.126,-0.016],
             p.getQuaternionFromEuler([0, 0, 3.14]),
             useFixedBase = True,
             flags=p.URDF_MAINTAIN_LINK_ORDER,
@@ -36,7 +36,7 @@ class LeapPybulletIK():
         self.bodyIdRight = p.loadURDF( 
             path_src_right,
             [URDFOffset_right[0], URDFOffset_right[1], URDFOffset_right[2]] if URDFOffset_right != None 
-            else [0.019,0.120,-0.016],
+            else [0.023,0.127,-0.016],
             p.getQuaternionFromEuler([0, 0, 3.14]),
             useFixedBase = True,
             flags=p.URDF_MAINTAIN_LINK_ORDER,
@@ -199,7 +199,7 @@ def pybulletCalibration(socket, side):
         manusData = message.split(",")
 
         #if both hands
-        if(len(manusData) > 20):
+        if(len(manusData) > 19):
             #if sampling left hand
             if(side == 0):
                 if(manusData[0] == leftHandID):
@@ -239,19 +239,23 @@ def pybulletCalibration(socket, side):
         ManusToLeapScaling[0] = (-0.209 + URDFBaseOffset[0]) / calibrationPoints[1][0] #right thumb scaling
 
     URDFBaseOffset[1] = 0.062 + (calibrationPoints[0][1]) * ManusToLeapScaling[0] #URDF base y-position
-    URDFBaseOffset[2] = -0.007 #URDF base z-position
+    URDFBaseOffset[2] = -0.016 #URDF base z-position
     ManusToLeapScaling[1] = (0.152 + URDFBaseOffset[1]) / calibrationPoints[3][1] #index scaling 
     ManusToLeapScaling[2] = (0.152 + URDFBaseOffset[1]) / calibrationPoints[5][1] #middle scaling
-    indexXOffset = ((0.0762 if side == 0 else -0.0762) + URDFBaseOffset[0] - calibrationPoints[3][0] * ManusToLeapScaling[1]) #index x-axis offset
+    indexXOffset = (0.0762 if side == 0 else -0.0762) + URDFBaseOffset[0] - calibrationPoints[3][0] * ManusToLeapScaling[1] #index x-axis offset
 
     if(side == 0):
         URDFBaseOffset[0] += -0.45
+
+    print(URDFBaseOffset, ManusToLeapScaling, indexXOffset)
+    
     return URDFBaseOffset, ManusToLeapScaling, indexXOffset
     
 
 def main(**kwargs):
-
-    leap_hand = LeapNode()
+    motor_ids_left = [0,1,2,3,4,5,6,7,8,9,10,11]
+    motor_ids_right = [0,1,2,3,4,5,6,7,8,9,10,11]
+    
     context = zmq.Context()
     print("Connecting to SDK")
     socket = context.socket(zmq.PULL)
@@ -271,17 +275,29 @@ def main(**kwargs):
     isLeftOn = False
     isRightOn = False
     leappybulletik = None
+    leap_hand_left = None
+    leap_hand_right = None
     endEffectors = [3, 4, 8, 9, 13, 14]
-
+    enableLeap = True
+    
     message = socket.recv()
     message = message.decode('utf-8')
     manusData = message.split(",")   
 
+    if(enableLeap == True):
+        if(len(manusData) > 19):
+            leap_hand_left = LeapNode("COM5", motor_ids_left)
+            leap_hand_right = LeapNode("COM6", motor_ids_right)
+        else:
+            if(manusData[0] == leftHandID):
+                leap_hand_left = LeapNode("COM5", motor_ids_left)
+            else:
+                leap_hand_right = LeapNode("COM6", motor_ids_right)
+        
     # Generate calibration data (optional) and initialise pybullet
     # Usage: "python MANUS_IK.py c" or "python MANUS_IK.py C"
     if (len(sys.argv) == 2):
         if(sys.argv[1] == "c" or sys.argv[1] == "C"):
-        
             # Checks to initiate IK for both hands or one hand only
             if(len(manusData) > 19):
                 URDFOffset_left, ManusToLeapScaling_left, indexXOffset_left = pybulletCalibration(socket, 0)
@@ -302,23 +318,22 @@ def main(**kwargs):
                     leappybulletik = LeapPybulletIK(endEffectors,URDFOffset_right=URDFOffset_right)
                     isCalibrated = True
                     isRightOn = True
-    #initialise IK without calibration (to use presets)
+    #initialise IK without calibration (to use manual presets)
     else:
-        if(len(manusData) > 20):
+        if(len(manusData) > 19):
             isLeftOn, isRightOn = True, True
         elif(manusData[0] == leftHandID):
             isLeftOn = True
         else:
             isRightOn = True
-        leappybulletik = LeapPybulletIK([3, 4, 8, 9, 13, 14])
-
+        leappybulletik = LeapPybulletIK(endEffectors)
 
     #start of teleop
     for n in range(100000):        
         leftTargetPosList.clear()
         rightTargetPosList.clear()
+        leapInputAnglesLeft.clear()
         leapInputAnglesRight.clear()
-    
         message = socket.recv()
         message = message.decode('utf-8')
         manusData = message.split(",")   
@@ -363,18 +378,18 @@ def main(**kwargs):
             #to manually adjust scaling and offsets
             else:
                 for i in range(3):
-                    leftTargetPosList[0][i] = leftTargetPosList[0][i] * 1.45
-                    leftTargetPosList[1][i] = leftTargetPosList[1][i] * 1.45
-                    leftTargetPosList[2][i] = leftTargetPosList[2][i] * 1.42
-                    leftTargetPosList[3][i] = leftTargetPosList[3][i] * 1.42
-                    leftTargetPosList[4][i] = leftTargetPosList[4][i] * 1.35
-                    leftTargetPosList[5][i] = leftTargetPosList[5][i] * 1.35
+                    leftTargetPosList[0][i] = leftTargetPosList[0][i] * 1.65
+                    leftTargetPosList[1][i] = leftTargetPosList[1][i] * 1.65
+                    leftTargetPosList[2][i] = leftTargetPosList[2][i] * 1.52
+                    leftTargetPosList[3][i] = leftTargetPosList[3][i] * 1.52
+                    leftTargetPosList[4][i] = leftTargetPosList[4][i] * 1.48
+                    leftTargetPosList[5][i] = leftTargetPosList[5][i] * 1.48
                 leftTargetPosList[2][0] += .015
                 leftTargetPosList[3][0] += .015
                 for n in range(6):
-                    leftTargetPosList[n][0] += -0.45 + 0.019
+                    leftTargetPosList[n][0] += -0.45
          
-        # MANUS to LEAP scaling (left hand)
+        # MANUS to LEAP scaling (right hand)
         if(isRightOn):
             #to use auto calibration values
             if(isCalibrated):
@@ -386,12 +401,13 @@ def main(**kwargs):
             #to manually adjust scaling and offsets
             else:
                 for i in range(3):
-                    rightTargetPosList[0][i] = rightTargetPosList[0][i] * 1.45
-                    rightTargetPosList[1][i] = rightTargetPosList[1][i] * 1.45
-                    rightTargetPosList[2][i] = rightTargetPosList[2][i] * 1.42
-                    rightTargetPosList[3][i] = rightTargetPosList[3][i] * 1.42
-                    rightTargetPosList[4][i] = rightTargetPosList[4][i] * 1.35
-                    rightTargetPosList[5][i] = rightTargetPosList[5][i] * 1.35
+
+                    rightTargetPosList[0][i] = rightTargetPosList[0][i] * 1.55
+                    rightTargetPosList[1][i] = rightTargetPosList[1][i] * 1.55
+                    rightTargetPosList[2][i] = rightTargetPosList[2][i] * 1.58
+                    rightTargetPosList[3][i] = rightTargetPosList[3][i] * 1.58
+                    rightTargetPosList[4][i] = rightTargetPosList[4][i] * 1.45
+                    rightTargetPosList[5][i] = rightTargetPosList[5][i] * 1.45
                 rightTargetPosList[2][0] -= .015
                 rightTargetPosList[3][0] -= .015
 
@@ -399,21 +415,21 @@ def main(**kwargs):
         IKAngles_left, IKAngles_right = leappybulletik.compute_IK(hand_pos_left=leftTargetPosList, hand_pos_right=rightTargetPosList)
         leappybulletik.setMotorControl(IKAngles_left, IKAngles_right)
 
-        # joint angle polarity and magnitude correction for LEAP hand control
-        # for count in range(12):
-        #     if(count in [0,1,2,3,5,9]):
-        #         leapInputAnglesRight.append(IKAngles_right[count] * -1 + 3.14)
-        #     else:
-        #         leapInputAnglesRight.append(IKAngles_right[count] + 3.14)
+        # Joint angle magnitude correction for LEAP hand control
+        if(enableLeap == True):
+            if(leap_hand_left):
+                for count in range(12):
+                    leapInputAnglesLeft.append(IKAngles_left[count] + 3.14)
+            if(leap_hand_right):
+                for count in range(12):
+                    leapInputAnglesRight.append(IKAngles_right[count] + 3.14)
         
-        # for count in range(12):
-        #     if(count in [0,1,2,3,5,9]):
-        #         leapInputAnglesRight.append(IKAngles_right[count] * -1 + 3.14)
-        #     else:
-        #         leapInputAnglesRight.append(IKAngles_right[count] + 3.14)
-
-        # print(leapInputAnglesRight)
-        leap_hand.set_leap(leapInputAnglesRight)
+        # Set LEAP hand pose
+        if(enableLeap == True):
+            if(leap_hand_left):
+                leap_hand_left.set_leap(leapInputAnglesLeft)
+            if(leap_hand_right):
+                leap_hand_right.set_leap(leapInputAnglesRight)
 
         time.sleep(.015)
 

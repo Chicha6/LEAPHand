@@ -23,15 +23,16 @@ I recommend you only query when necessary and below 90 samples a second.  Used t
 """
 ########################################################
 class LeapNode:
-    def __init__(self):
+    def __init__(self, com, motors):
         ####Some parameters
         # I recommend you keep the current limit from 350 for the lite, and 550 for the full hand
         # Increase KP if the hand is too weak, decrease if it's jittery.
-        self.kP = 600
+        self.kP = 650
         self.kI = 0
-        self.kD = 200
+        self.kD = 650
         self.curr_lim = 350
-        self.prev_pos = self.pos = self.curr_pos = lhu.allegro_to_LEAPhand(np.zeros(12))
+        self.prev_pos = self.pos = self.curr_pos = lhu.allegro_to_LEAPhand(np.zeros(len(motors)))
+        self.com = com
 
         #You can put the correct port here or have the node auto-search for a hand at the first 3 ports.
         # For example ls /dev/serial/by-id/* to find your LEAP Hand. Then use the result.  
@@ -41,7 +42,8 @@ class LeapNode:
         # Index  -> 0: MCP flex, 1: MCP side, 2: Pip flex, 3: Dip flex
         # Middle -> 4: MCP flex, 5: MCP side, 6: Pip flex, 7: Dip flex
         # THumb  -> 8: MCP flex, 9: MCP side, 10: Pip flex, 11: Dip flex
-        self.motors = motors = [0,1,2,3,4,5,6,7,8,9,10,11]
+        # self.motors = motors = [0,1,2,3,4,5,6,7,8,9,10,11]
+        self.motors = motors
 
         try:
             self.dxl_client = DynamixelClient(motors, '/dev/ttyUSB0', 4000000)
@@ -51,7 +53,7 @@ class LeapNode:
                 self.dxl_client = DynamixelClient(motors, '/dev/ttyUSB1', 4000000)
                 self.dxl_client.connect()
             except Exception:
-                self.dxl_client = DynamixelClient(motors, 'COM3', 4000000)
+                self.dxl_client = DynamixelClient(motors, com, 4000000)
                 self.dxl_client.connect()
         #Enables position-current control mode and the default parameters, it commands a position and then caps the current so the motors don't overload
         self.dxl_client.sync_write(motors, np.ones(len(motors))*5, 11, 1)
@@ -100,13 +102,18 @@ class LeapNode:
     
 #init the node
 def main(**kwargs):
-    leap_hand = LeapNode()
-    while True:
+    motor_ids_left = [0,1,2,3,4,5,6,7,8,9,10,11]
+    motor_ids_right = [0,1,2,3,4,5,6,7,8,9,10,11]
+    leap_hand_left = LeapNode("COM5", motor_ids_left)
+    leap_hand_right = LeapNode("COM6", motor_ids_right)
+    time.sleep(1)
+    for n in range(300):
+        newAng = 3.141 + n*0.01
 
-        # leap_hand.set_allegro(np.zeros(12)) # Set to an open pose and read the joint angles 33hz
-        # leap_hand.set_leap(np.full(12,3.141)) # Set to an open pose and read the joint angles 33hz
-        # print("Position: " + str(leap_hand.r8ead_pos())) # Reads leap motor positions and print
-        time.sleep(.5)
+        # Starts at an open pose then slowly clenches, splay is maintained
+        leap_hand_left.set_leap([newAng,newAng,newAng,newAng,newAng,3.141,newAng,newAng,newAng,3.141,newAng,newAng]) 
+        leap_hand_right.set_leap([newAng,newAng,newAng,newAng,newAng,3.141,newAng,newAng,newAng,3.141,newAng,newAng]) 
+        time.sleep(.1)
 
 
 if __name__ == "__main__":

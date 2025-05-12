@@ -10,8 +10,8 @@ leftHandID = "558097a3"
 rightHandID = "e13e29f2"
 
 def main(**kwargs):
-    
-    leap_hand = LeapNode()
+    motor_ids_left = [0,1,2,3,4,5,6,7,8,9,10,11]
+    motor_ids_right = [0,1,2,3,4,5,6,7,8,9,10,11]
 
     #set up zmq
     context = zmq.Context()
@@ -31,15 +31,25 @@ def main(**kwargs):
 
     leapInputAnglesLeft = [0,0,0,0,0,0,0,0,0,0,0,0]
     leapInputAnglesRight = [0,0,0,0,0,0,0,0,0,0,0,0]
+    leap_hand_left = None
+    leap_hand_right = None
     isCalibrated = False
     isLeftOn = False
     isRightOn = False
     leappybulletik = None
+    enableLeap = True
 
     
     message = socketRaw.recv()
     message = message.decode('utf-8')
     manusData = message.split(",")   
+
+    if(enableLeap == True):
+        if(isLeftOn):
+            leap_hand_left = LeapNode("COM5", motor_ids_left)
+
+        if(isRightOn):    
+            leap_hand_right = LeapNode("COM6", motor_ids_right)
 
     # Generate calibration data (optional) and initialise pybullet
     # Usage: "python MANUS_IK.py c" or "python MANUS_IK.py C"
@@ -82,7 +92,7 @@ def main(**kwargs):
         leftTargetPosList.clear()
         rightTargetPosList.clear()
 
-    ##start of IK
+        ##start of IK
         messageRaw = socketRaw.recv()
         messageRaw = messageRaw.decode('utf-8')
         manusRawData = messageRaw.split(",")      
@@ -125,11 +135,11 @@ def main(**kwargs):
             #to manually adjust scaling and offsets
             else:
                 for i in range(3):
-                    leftTargetPosList[0][i] = leftTargetPosList[0][i] * 1.45
-                    leftTargetPosList[1][i] = leftTargetPosList[1][i] * 1.45
+                    leftTargetPosList[0][i] = leftTargetPosList[0][i] * 1.65
+                    leftTargetPosList[1][i] = leftTargetPosList[1][i] * 1.65
                 for n in range(2):
-                    leftTargetPosList[n][0] += -0.45 + 0.019
-        # MANUS to LEAP scaling (left hand)
+                    leftTargetPosList[n][0] += -0.45 
+        # MANUS to LEAP scaling (right hand)
         if(isRightOn):
             #to use auto calibration values
             if(isCalibrated):
@@ -139,46 +149,59 @@ def main(**kwargs):
             #to manually adjust scaling
             else:
                 for i in range(3):
-                    rightTargetPosList[0][i] = rightTargetPosList[0][i] * 1.45
-                    rightTargetPosList[1][i] = rightTargetPosList[1][i] * 1.45
-        
+                    rightTargetPosList[0][i] = rightTargetPosList[0][i] * 1.55
+                    rightTargetPosList[1][i] = rightTargetPosList[1][i] * 1.55
         
         leappybulletik.update_target_vis(leftTargetPosList, rightTargetPosList)
         IKAngles_left, IKAngles_right = leappybulletik.compute_IK(hand_pos_left=leftTargetPosList, hand_pos_right=rightTargetPosList)
-    ##end of IK
+        ##end of IK
 
-    ##start of FK
+        ##start of FK
         messageErgo = socketErgo.recv()
         messageErgo = messageErgo.decode('utf-8')
         manusErgoData = messageErgo.split(",")
 
-        leftErgoData = tuple(np.deg2rad(list(map(float,manusErgoData[1:9]))))
-        rightErgoData = tuple(np.deg2rad(list(map(float,manusErgoData[10:18]))))
+        leftErgoData = np.deg2rad(list(map(float,manusErgoData[1:9])))
+        rightErgoData = np.deg2rad(list(map(float,manusErgoData[10:18])))
 
-        for n in range(4,12):
-            if (n == 4):
-                # Correcting polarity and amplifying splay
-                leapInputAnglesRight[n] = (rightErgoData[n-4]) * 1.4 + 3.14
-            elif (n == 8):
-                # Correcting polarity and amplifying splay
-                leapInputAnglesRight[n] = (rightErgoData[n-4]) * 1.4 + 3.14
-            elif (n == 5 or n == 9):
-                # Increase MCP joint flexion
-                leapInputAnglesRight[n] = rightErgoData[n-4] *-1 + 3.14
-            else:
-                leapInputAnglesRight[n] = rightErgoData[n-4] + 3.14
+        if(isLeftOn):
+             for n in range(4,12):
+                if (n == 5 or n == 9):
+                    # Correcting polarity and amplifying splay
+                    leapInputAnglesLeft[n] = leftErgoData[n-4] * -1.4 + 3.14
+                else:
+                    leapInputAnglesLeft[n] = leftErgoData[n-4] + 3.14
+
+        if(isRightOn):
+            for n in range(4,12):
+                if (n == 5 or n == 9):
+                    # Correcting polarity and amplifying splay
+                    leapInputAnglesRight[n] = rightErgoData[n-4] *-1.4 + 3.14
+                else:
+                    leapInputAnglesRight[n] = rightErgoData[n-4] + 3.14
         
-        # Adjusting thumb joints and reordering joint angles in rightData
-        # rightData = [60 - .8*rightData[1] + 180] + [-30 + 50 + rightData[0] + 180] + [2.5*rightData[2] + 180] + [rightData[3] + 180] + [rightData[5], rightData[4]] + rightData[6:8] + [rightData[9], rightData[8]] + rightData[10:12]
         
         # joint angle polarity and magnitude correction for LEAP hand control
-        for count in range(4):
-            leapInputAnglesRight[count] = IKAngles_right[count] * -1 + 3.14
+        if(isLeftOn):
+            for count in range(4):
+                leapInputAnglesLeft[count] = IKAngles_left[count] + 3.14
+        if(isRightOn):
+            for count in range(4):
+                leapInputAnglesRight[count] = IKAngles_right[count] + 3.14
 
     ##end of FK
-        leappybulletik.setMotorControl(IKAngles_left[:4] + leftErgoData, IKAngles_right[0:4] + rightErgoData)
-        leap_hand.set_leap(leapInputAnglesRight)
+        leftErgoData[1] = leftErgoData[1] * -1.8
+        leftErgoData[5] = leftErgoData[5] * -1
+        rightErgoData[1] = rightErgoData[1] * -1.8
+        rightErgoData[5] = rightErgoData[5] * -1
+        # leappybulletik.setMotorControl(IKAngles_left[:4] + tuple(leftErgoData), IKAngles_right[0:4] + tuple(rightErgoData))
+        leappybulletik.setMotorControl(IKAngles_left[0:4] + tuple(leftErgoData), None)
 
+        if(enableLeap == True):
+            if(isLeftOn):
+                leap_hand_left.set_leap(leapInputAnglesLeft)
+            if(isRightOn):
+                leap_hand_right.set_leap(leapInputAnglesRight)
         time.sleep(.015)
 
     p.disconnect()

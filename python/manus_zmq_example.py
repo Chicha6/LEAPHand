@@ -7,15 +7,15 @@ To run this, first run our MANUS SDK and then this script.
 Keep in mind this data runs VERY fast, I would not recommend directly setting robot hands at this rate but instead slow down the data.
 '''
 
-left_glove_sn = "558097A3"
-right_glove_sn = "E13E29F2"
+left_glove_sn = "558097a3"
+right_glove_sn = "e13e29f2"
 
 context = zmq.Context()
 #Socket to talk to Manus SDK
 print("Connecting to SDK")
 socket = context.socket(zmq.PULL)
 socket.setsockopt(zmq.CONFLATE, True)     
-socket.connect("tcp://127.0.0.1:9000")
+socket.connect("tcp://127.0.0.1:8000")
 
 
 '''
@@ -41,17 +41,6 @@ while True:
     message = socket.recv()
     #receive the message from the socket
     message = message.decode('utf-8')
-    #print("Received reply %s" % (message))
     data = message.split(",")   
     print(data)
-    # if len(data) == 4:
-    #     print("Left Glove Joint-level Ergonomics Data:")
-    #     print(list(map(float,data[0:20])))
-    #     print("Right Glove Joint-level Ergonomics Data:")
-    #     print(list(map(float,data[20:40])))
-    # elif len(data) == 352:
-    #     parse_full_skeleton(data[0:176])
-    #     parse_full_skeleton(data[176:352])
-    # elif len(data) == 176:
-    #     parse_full_skeleton(data[0:176])
 
