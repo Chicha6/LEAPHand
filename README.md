@@ -1,1 +1,1 @@
-Setup Guide
+This repo is adapted from [Bidex_Manus_Teleop](https://github.com/leap-hand/Bidex_Manus_Teleop). Currently all the changes made are the in python subfolder. Please refer to the readme file in the aforementioned subfolder.
