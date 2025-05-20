@@ -9,16 +9,13 @@ import time
 
 I recommend you only query when necessary and below 90 samples a second.  Used the combined commands if you can to save time.  Also don't forget about the USB latency settings in the readme.
 
-#Allegro hand conventions:
-#0.0 is the all the way out beginning pose, and it goes positive as the fingers close more and more.
-
-#LEAP hand conventions:
-#180 is flat out home pose for the index, middle, ring, finger MCPs. (In radian)
+#LEAP hand controlconventions:
+#180 is flat out (In radian)
 #Applying a positive angle closes the joints more and more to curl closed.
 #The MCP is centered at 180 and can move positive or negative to that.
 
-#The joint numbering goes from Index (0-3), Middle(4-7), Ring(8-11) to Thumb(12-15) and from MCP Side(Splay), MCP Forward, PIP, DIP for each finger.
-#For instance, the MCP Side of Index is ID 0, the MCP Forward of Ring is 9, the DIP of Ring is 11
+#The joint numbering goes from Thumb (0-3), Index(4-7), Middle(8-11) and from MCP flex, MCP side (splay), PIP, DIP for each finger.
+#For instance, the MCP side of Index is ID 5, the MCP flex of middle is 8
 
 """
 ########################################################
@@ -34,15 +31,9 @@ class LeapNode:
         self.prev_pos = self.pos = self.curr_pos = lhu.allegro_to_LEAPhand(np.zeros(len(motors)))
         self.com = com
 
-        #You can put the correct port here or have the node auto-search for a hand at the first 3 ports.
+        # You can put the correct port here or have the node auto-search for a hand at the first 3 ports.
         # For example ls /dev/serial/by-id/* to find your LEAP Hand. Then use the result.  
         # For example: /dev/serial/by-id/usb-FTDI_USB__-__Serial_Converter_FT7W91VW-if00-port0
-
-        # Motor IDs, can be changed in Dynamixel Wizard
-        # Index  -> 0: MCP flex, 1: MCP side, 2: Pip flex, 3: Dip flex
-        # Middle -> 4: MCP flex, 5: MCP side, 6: Pip flex, 7: Dip flex
-        # THumb  -> 8: MCP flex, 9: MCP side, 10: Pip flex, 11: Dip flex
-        # self.motors = motors = [0,1,2,3,4,5,6,7,8,9,10,11]
         self.motors = motors
 
         try:
@@ -102,6 +93,11 @@ class LeapNode:
     
 #init the node
 def main(**kwargs):
+
+    # Motor IDs, can be changed in Dynamixel Wizard
+    # Thumb  -> 0: MCP flex, 1: MCP side, 2: PIP flex, 3: DIP flex
+    # Index -> 4: MCP flex, 5: MCP side, 6: PIP flex, 7: DIP flex
+    # Middle  -> 8: MCP flex, 9: MCP side, 10: PIP flex, 11: DIP flex
     motor_ids_left = [0,1,2,3,4,5,6,7,8,9,10,11]
     motor_ids_right = [0,1,2,3,4,5,6,7,8,9,10,11]
     leap_hand_left = LeapNode("COM5", motor_ids_left)
