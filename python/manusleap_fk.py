@@ -9,7 +9,7 @@ The thumb joint angles value are adjusted during the teleoperation phase to acco
 
 """
 
-#Set U2D2 COM port here
+# Set U2D2 COM port here
 leftCOM = "COM5"
 rightCOM = "COM6"
 

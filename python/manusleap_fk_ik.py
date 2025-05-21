@@ -187,9 +187,9 @@ def main(**kwargs):
         
         leappybulletik.update_target_vis(leftTargetPosList, rightTargetPosList)
         IKAngles_left, IKAngles_right = leappybulletik.compute_IK(hand_pos_left=leftTargetPosList, hand_pos_right=rightTargetPosList)
-        ##end of IK
+        ## End of IK
 
-        ##start of FK
+        ## Start of FK
         messageErgo = socketErgo.recv()
         messageErgo = messageErgo.decode('utf-8')
         manusErgoData = messageErgo.split(",")
@@ -224,14 +224,14 @@ def main(**kwargs):
             if(isRightOn):
                 for count in range(4):
                     leapInputAnglesRight[count] = IKAngles_right[count] + 3.14
-    ##end of FK
+        ## End of FK
 
         leftErgoData[1] = leftErgoData[1] * -1.4
         leftErgoData[5] = leftErgoData[5] * -1
         rightErgoData[1] = rightErgoData[1] * -1.4
         rightErgoData[5] = rightErgoData[5] * -1
-        # leappybulletik.setMotorControl(IKAngles_left[:4] + tuple(leftErgoData), IKAngles_right[0:4] + tuple(rightErgoData))
-        leappybulletik.setMotorControl(None,IKAngles_right[0:4] + tuple(rightErgoData))
+        leappybulletik.setMotorControl(IKAngles_left[:4] + tuple(leftErgoData), IKAngles_right[0:4] + tuple(rightErgoData))
+        # leappybulletik.setMotorControl(None,IKAngles_right[0:4] + tuple(rightErgoData))
 
         if(enableLeap == True):
             if(isLeftOn):
