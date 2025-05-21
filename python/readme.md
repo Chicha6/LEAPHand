@@ -1,5 +1,8 @@
 # Modified Python SDK For 3-Fingered LEAP Hand 
 
+## Hardware
+[For Assembly](https://drive.google.com/drive/folders/11GmIZTVYdWAc8Pl7cqzY3sA_pOkUi0e-?usp=sharing)
+
 ## Set Up Guide
 1. Clone the repo
 2. This repo was tested on Python 3.13 only, and may not work on other versions. Do check the version on your device to avoid compatability issues.
