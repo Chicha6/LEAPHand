@@ -1,7 +1,12 @@
 # Modified Python SDK For 3-Fingered LEAP Hand 
 
 ## Hardware
-[For Assembly](https://drive.google.com/drive/folders/11GmIZTVYdWAc8Pl7cqzY3sA_pOkUi0e-?usp=sharing)
+The assembly of the robot hand and the parts to be 3D printed are in the folder ["For Assembly"](https://drive.google.com/drive/folders/11GmIZTVYdWAc8Pl7cqzY3sA_pOkUi0e-?usp=sharing). Print settings are included in the "BOM" file.   
+
+It would be useful to familiarise yourself with the nomenclature of the human hand as the parts in the assembly are named according to it. They are also used in the python scripts. An image is included to help you with that. 
+
+### URDF For PyBullet
+URDF was generated using [ACDC4Robot](https://apps.autodesk.com/FUSION/en/Detail/Index?id=5028052292896011577&appLang=en&os=Win64). However, the URDF included in this repo was slightly modified to flip the axis of rotation of some joints. 
 
 ## Set Up Guide
 1. Clone the repo
